@@ -77,6 +77,7 @@ export default function EditEntry() {
     reception_rating: entry.reception_rating,
     block_rating: entry.block_rating,
     attack_rating: entry.attack_rating,
+    pass_rating: entry.pass_rating,
     mental_rating: entry.mental_rating,
     physical_rating: entry.physical_rating,
     notes: entry.notes,
