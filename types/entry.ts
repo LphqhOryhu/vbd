@@ -11,13 +11,14 @@ export interface Entry {
   id: string;
   session_date: string;
   session_type: SessionType;
-  overall_rating: number;
-  service_rating: number;
-  reception_rating: number;
-  block_rating: number;
-  attack_rating: number;
-  mental_rating: number;
-  physical_rating: number;
+  overall_rating: number | null;
+  service_rating: number | null;
+  reception_rating: number | null;
+  block_rating: number | null;
+  attack_rating: number | null;
+  pass_rating: number | null;
+  mental_rating: number | null;
+  physical_rating: number | null;
   notes: string;
   created_at: string;
 }

@@ -15,10 +15,15 @@ export default function EntryCard({ entry }: EntryCardProps) {
     });
   };
 
-  const getRatingColor = (rating: number) => {
+  const getRatingColor = (rating: number | null | undefined) => {
+    if (rating == null) return 'text-zinc-400 dark:text-zinc-500';
     if (rating >= 8) return 'text-green-600 dark:text-green-400';
     if (rating >= 5) return 'text-yellow-600 dark:text-yellow-400';
     return 'text-red-600 dark:text-red-400';
+  };
+
+  const formatRating = (rating: number | null | undefined) => {
+    return rating == null ? 'N/A' : rating.toString();
   };
 
   return (
@@ -36,46 +41,52 @@ export default function EntryCard({ entry }: EntryCardProps) {
           <div className="text-right">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Global</p>
             <p className={`text-2xl font-bold ${getRatingColor(entry.overall_rating)}`}>
-              {entry.overall_rating}/10
+              {entry.overall_rating === null ? 'N/A' : `${entry.overall_rating}/10`}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="grid grid-cols-4 gap-2 text-center text-xs">
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Service</p>
             <p className={`font-semibold ${getRatingColor(entry.service_rating)}`}>
-              {entry.service_rating}
+              {formatRating(entry.service_rating)}
             </p>
           </div>
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Réception</p>
             <p className={`font-semibold ${getRatingColor(entry.reception_rating)}`}>
-              {entry.reception_rating}
+              {formatRating(entry.reception_rating)}
+            </p>
+          </div>
+          <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
+            <p className="text-zinc-500 dark:text-zinc-400">Passe</p>
+            <p className={`font-semibold ${getRatingColor(entry.pass_rating)}`}>
+              {formatRating(entry.pass_rating)}
             </p>
           </div>
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Bloc</p>
             <p className={`font-semibold ${getRatingColor(entry.block_rating)}`}>
-              {entry.block_rating}
+              {formatRating(entry.block_rating)}
             </p>
           </div>
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Attaque</p>
             <p className={`font-semibold ${getRatingColor(entry.attack_rating)}`}>
-              {entry.attack_rating}
+              {formatRating(entry.attack_rating)}
             </p>
           </div>
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Mental</p>
             <p className={`font-semibold ${getRatingColor(entry.mental_rating)}`}>
-              {entry.mental_rating}
+              {formatRating(entry.mental_rating)}
             </p>
           </div>
           <div className="rounded-lg bg-zinc-50 p-2 dark:bg-zinc-700">
             <p className="text-zinc-500 dark:text-zinc-400">Physique</p>
             <p className={`font-semibold ${getRatingColor(entry.physical_rating)}`}>
-              {entry.physical_rating}
+              {formatRating(entry.physical_rating)}
             </p>
           </div>
         </div>

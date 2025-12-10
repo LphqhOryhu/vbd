@@ -11,11 +11,12 @@ interface EntryFormProps {
 const defaultFormData: EntryFormData = {
   session_date: new Date().toISOString().split('T')[0],
   session_type: 'loisir_lundi',
-  overall_rating: 5,
+  overall_rating: null,
   service_rating: 5,
   reception_rating: 5,
   block_rating: 5,
   attack_rating: 5,
+  pass_rating: 5,
   mental_rating: 5,
   physical_rating: 5,
   notes: '',
@@ -41,7 +42,7 @@ export default function EntryForm({ initialData, entryId }: EntryFormProps) {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, overall_rating: overallRating }),
       });
 
       if (!response.ok) {
@@ -60,6 +61,25 @@ export default function EntryForm({ initialData, entryId }: EntryFormProps) {
   const updateField = <K extends keyof EntryFormData>(field: K, value: EntryFormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Calcul automatique de la note globale (moyenne des notes non-N/A)
+  const calculateOverallRating = (): number | null => {
+    const ratings = [
+      formData.service_rating,
+      formData.reception_rating,
+      formData.block_rating,
+      formData.attack_rating,
+      formData.pass_rating,
+      formData.mental_rating,
+      formData.physical_rating,
+    ].filter((r): r is number => r !== null);
+
+    if (ratings.length === 0) return null;
+    const average = ratings.reduce((sum, r) => sum + r, 0) / ratings.length;
+    return Math.round(average * 10) / 10;
+  };
+
+  const overallRating = calculateOverallRating();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -102,50 +122,76 @@ export default function EntryForm({ initialData, entryId }: EntryFormProps) {
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-700 dark:bg-zinc-800/50">
-        <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
           Note globale
         </h3>
-        <RatingInput
-          label="Comment s'est passée cette séance ?"
-          value={formData.overall_rating}
-          onChange={(value) => updateField('overall_rating', value)}
-        />
+        <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+          Calculée automatiquement (moyenne des compétences évaluées)
+        </p>
+        <div className="flex items-center gap-2">
+          <span className={`text-3xl font-bold ${
+            overallRating === null
+              ? 'text-zinc-400'
+              : overallRating >= 8
+                ? 'text-green-600 dark:text-green-400'
+                : overallRating >= 5
+                  ? 'text-yellow-600 dark:text-yellow-400'
+                  : 'text-red-600 dark:text-red-400'
+          }`}>
+            {overallRating === null ? 'N/A' : `${overallRating}/10`}
+          </span>
+        </div>
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-700 dark:bg-zinc-800/50">
-        <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
           Notes par compétence
         </h3>
+        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Utilisez N/A si vous n'avez pas pu évaluer une compétence
+        </p>
         <div className="grid gap-6 sm:grid-cols-2">
           <RatingInput
             label="Service"
             value={formData.service_rating}
             onChange={(value) => updateField('service_rating', value)}
+            allowNA
           />
           <RatingInput
             label="Réception"
             value={formData.reception_rating}
             onChange={(value) => updateField('reception_rating', value)}
+            allowNA
+          />
+          <RatingInput
+            label="Passe"
+            value={formData.pass_rating}
+            onChange={(value) => updateField('pass_rating', value)}
+            allowNA
           />
           <RatingInput
             label="Bloc"
             value={formData.block_rating}
             onChange={(value) => updateField('block_rating', value)}
+            allowNA
           />
           <RatingInput
             label="Attaque"
             value={formData.attack_rating}
             onChange={(value) => updateField('attack_rating', value)}
+            allowNA
           />
           <RatingInput
             label="Mental"
             value={formData.mental_rating}
             onChange={(value) => updateField('mental_rating', value)}
+            allowNA
           />
           <RatingInput
             label="Physique"
             value={formData.physical_rating}
             onChange={(value) => updateField('physical_rating', value)}
+            allowNA
           />
         </div>
       </div>

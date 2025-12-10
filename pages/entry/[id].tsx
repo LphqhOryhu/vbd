@@ -62,16 +62,22 @@ export default function EntryDetail() {
     });
   };
 
-  const getRatingColor = (rating: number) => {
+  const getRatingColor = (rating: number | null | undefined) => {
+    if (rating == null) return 'text-zinc-400 dark:text-zinc-500';
     if (rating >= 8) return 'text-green-600 dark:text-green-400';
     if (rating >= 5) return 'text-yellow-600 dark:text-yellow-400';
     return 'text-red-600 dark:text-red-400';
   };
 
-  const getRatingBg = (rating: number) => {
+  const getRatingBg = (rating: number | null | undefined) => {
+    if (rating == null) return 'bg-zinc-100 dark:bg-zinc-800';
     if (rating >= 8) return 'bg-green-100 dark:bg-green-900/30';
     if (rating >= 5) return 'bg-yellow-100 dark:bg-yellow-900/30';
     return 'bg-red-100 dark:bg-red-900/30';
+  };
+
+  const formatRating = (rating: number | null | undefined) => {
+    return rating == null ? 'N/A' : `${rating}/10`;
   };
 
   if (isLoading) {
@@ -129,7 +135,7 @@ export default function EntryDetail() {
             <div className="text-right">
               <p className="text-sm text-zinc-500 dark:text-zinc-400">Note globale</p>
               <p className={`text-4xl font-bold ${getRatingColor(entry.overall_rating)}`}>
-                {entry.overall_rating}/10
+                {formatRating(entry.overall_rating)}
               </p>
             </div>
           </div>
@@ -137,10 +143,11 @@ export default function EntryDetail() {
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
             Détail des performances
           </h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
               { label: 'Service', value: entry.service_rating },
               { label: 'Réception', value: entry.reception_rating },
+              { label: 'Passe', value: entry.pass_rating },
               { label: 'Bloc', value: entry.block_rating },
               { label: 'Attaque', value: entry.attack_rating },
               { label: 'Mental', value: entry.mental_rating },
@@ -152,7 +159,7 @@ export default function EntryDetail() {
               >
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">{stat.label}</p>
                 <p className={`text-2xl font-bold ${getRatingColor(stat.value)}`}>
-                  {stat.value}/10
+                  {formatRating(stat.value)}
                 </p>
               </div>
             ))}
